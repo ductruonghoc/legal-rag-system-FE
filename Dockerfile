@@ -27,8 +27,14 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create a non-root user
-RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
+# Create user and grant folder permissions
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001 && \
+    # Allow Nginx to write PIDs and Cache as non-root
+    chown -R nextjs:nodejs /var/cache/nginx /var/log/nginx /etc/nginx/conf.d && \
+    touch /var/run/nginx.pid && \
+    chown nextjs:nodejs /var/run/nginx.pid
+    
 USER nextjs
 
 # Expose port 8080 (required for Cloud Run)
