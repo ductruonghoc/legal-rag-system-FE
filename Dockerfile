@@ -25,37 +25,7 @@ FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY <<EOF /etc/nginx/conf.d/default.conf
-server {
-    listen 8080;
-    server_name localhost;
-    root /usr/share/nginx/html;
-    index index.html;
-
-    # Enable gzip compression
-    gzip on;
-    gzip_vary on;
-    gzip_min_length 1024;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-
-    # Handle client-side routing
-    location / {
-        try_files \$uri \$uri/ /index.html;
-    }
-
-    # Cache static assets
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-
-    # Security headers
-    add_header X-Frame-Options DENY;
-    add_header X-Content-Type-Options nosniff;
-    add_header X-XSS-Protection "1; mode=block";
-    add_header Referrer-Policy "strict-origin-when-cross-origin";
-}
-EOF
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Create a non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
