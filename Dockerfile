@@ -22,7 +22,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist/ /usr/share/nginx/html/
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -34,7 +34,7 @@ RUN addgroup -g 1001 -S nodejs && \
     chown -R nextjs:nodejs /var/cache/nginx /var/log/nginx /etc/nginx/conf.d && \
     touch /var/run/nginx.pid && \
     chown nextjs:nodejs /var/run/nginx.pid
-    
+
 USER nextjs
 
 # Expose port 8080 (required for Cloud Run)
